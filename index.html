@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pelantaq Ikan Bakaq</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+body{background:#0f172a;color:#f8fafc;padding-bottom:80px}
+.container{max-width:1100px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;background:#0f172a;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.35);z-index:950}
+.header-wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo-small{height:48px;width:auto;border-radius:50%}
+.brand-text{color:#fbbf24;font-weight:700;font-size:1.2rem}
+.logo-hero{height:170px;width:auto;margin-bottom:20px;border-radius:50%}
+.cart-fixed-bar{position:fixed;bottom:0;left:0;width:100%;background:#1e293b;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -2px 10px rgba(0,0,0,.35);z-index:900}
+.cart-count-label{font-size:1rem;color:#fef3c7}
+.btn-cart-open{padding:10px 16px;background:#f59e0b;color:#0f172a;font-weight:600;border:none;border-radius:8px;cursor:pointer}
+.btn-cart-open:hover{background:#fbbf24}
+.qty-wrap{display:flex;gap:8px;align-items:center;margin-top:12px;margin-bottom:10px}
+.btn-min,.btn-plus{padding:6px 10px;border:none;border-radius:6px;background:#f59e0b;color:#0f172a;font-weight:bold;cursor:pointer}
+.qty-val{min-width:28px;text-align:center;font-size:1rem}
+.btn-add-cart{width:100%;padding:9px 12px;background:#f59e0b;color:#0f172a;font-weight:600;border:none;border-radius:8px;cursor:pointer;transition:all .25s ease;font-size:0.95rem}
+.btn-add-cart:hover{background:#fbbf24}
+section{padding:60px 0}
+section h2{text-align:center;font-size:1.8rem;color:#fbbf24;margin-bottom:36px}
+section h3{color:#fef3c7;margin:28px 0 14px;font-size:1.3rem}
+.menu-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:16px;
+  align-items:stretch;
+}
+.menu-card{background:#1e293b;border-radius:16px;padding:16px;transition:transform .3s ease;height:100%}
+.menu-card:hover{transform:translateY(-4px)}
+.menu-card h4{color:#fbbf24;margin-bottom:6px;font-size:1.05rem}
+.menu-card p{font-size:0.9rem;line-height:1.4}
+.price{margin-top:10px;font-weight:bold;color:#a5f3fc;font-size:1.1rem}
+.promo-highlight{border:2px solid #fbbf24;background:#273449}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.85);display:flex;justify-content:center;align-items:center;opacity:0;pointer-events:none;transition:opacity .35s ease;z-index:999;padding:16px}
+.modal-overlay.active{opacity:1;pointer-events:auto}
+.modal-box{background:#1e293b;border-radius:20px;padding:24px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;transform:translateY(30px);transition:transform .35s ease}
+.modal-overlay.active .modal-box{transform:translateY(0)}
+.modal-box h3{color:#fbbf24;margin-bottom:18px;text-align:center}
+.cart-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #334155}
+.btn-remove-item{padding:4px 8px;background:#ef4444;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:0.9rem}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;margin-bottom:5px;color:#fef3c7;font-size:0.95rem}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:11px;border-radius:8px;border:none;background:#334155;color:#f8fafc;font-size:1rem}
+.modal-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.btn-cancel{padding:11px;background:#475569;color:#f8fafc;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+.btn-submit-order{padding:11px;background:#22c55e;color:#0f172a;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+.cta-block{text-align:center;padding:50px 16px;background:linear-gradient(160deg,#1e293b,#0f172a)}
+footer{text-align:center;padding:28px 16px}
+.footer-logo{width:120px;height:auto;border-radius:50%;margin-bottom:16px}
+.footer-title{color:#fbbf24;margin-bottom:12px}
+.footer-desc{max-width:600px;margin:0 auto;opacity:.85}
+.footer-copy{margin-top:18px;font-size:.9rem;opacity:.75}
+.note-text{margin-top:10px;font-size:0.85rem;opacity:0.8}
+</style>
+</head>
+<body>
+<header>
+<div class="header-wrap">
+<img src="logo-pelantaq.png" alt="Logo Pelantaq Ikan Bakaq" class="logo-small">
+<span class="brand-text">PELANTAQ IKAN BAKAQ</span>
+</div>
+</header>
+
+<div class="cart-fixed-bar">
+<div class="cart-count-label">Jumlah Item: <span id="cartTotalItem">0</span></div>
+<button class="btn-cart-open" id="btnCartOpen">Lihat Troli & Tempah</button>
+</div>
+
+<section class="hero">
+<div class="container" style="text-align:center">
+<img src="logo-pelantaq.png" alt="Logo Pelantaq Ikan Bakaq" class="logo-hero">
+<h1>PELANTAQ IKAN BAKAQ</h1>
+<p>Ikan segar dibakar dengan rempah rahsia — berjus, wangi & cukup perisa.</p>
+</div>
+</section>
+
+<section>
+<div class="container">
+<h2>Menu Promosi</h2>
+<div class="menu-grid">
+<div class="menu-card promo-highlight">
+<h4>Chicken Chop Mini</h4>
+<p>Potongan ayam goreng rangup bersaiz mini</p>
+<p class="price">RM 8.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Chop Mini">−</button>
+<span class="qty-val" data-name="Chicken Chop Mini">0</span>
+<button class="btn-plus" data-name="Chicken Chop Mini">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Chop Mini">Tambah Ke Troli</button>
+</div>
+<div class="menu-card promo-highlight">
+<h4>Set Sosej Jumbo</h4>
+<p>Sosej besar dengan sos pilihan</p>
+<p class="price">RM 10.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Set Sosej Jumbo">−</button>
+<span class="qty-val" data-name="Set Sosej Jumbo">0</span>
+<button class="btn-plus" data-name="Set Sosej Jumbo">+</button>
+</div>
+<button class="btn-add-cart" data-name="Set Sosej Jumbo">Tambah Ke Troli</button>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<h2>Menu Utama Ikan Bakaq</h2>
+<h3>Set Ikan</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Set Single</h4>
+<p>Ikan Siakap (S) Bakar /3 Rasa, Nasi Putih, Sambal Sotong, Sup Sayur Mini</p>
+<p class="price">RM 25.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Set Single">−</button>
+<span class="qty-val" data-name="Set Single">0</span>
+<button class="btn-plus" data-name="Set Single">+</button>
+</div>
+<button class="btn-add-cart" data-name="Set Single">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Set Couple</h4>
+<p>Ikan Siakap (M) Bakar /3 Rasa, Nasi Putih ×2, Sup Sayur(M), Telur Dadar(S)</p>
+<p class="price">RM 35.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Set Couple">−</button>
+<span class="qty-val" data-name="Set Couple">0</span>
+<button class="btn-plus" data-name="Set Couple">+</button>
+</div>
+<button class="btn-add-cart" data-name="Set Couple">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Set Family</h4>
+<p>Ikan Siakap (L) Bakar /3 Rasa, Nasi Putih ×4, Sup Sayur/Daging(L), Telur Dadar(M)</p>
+<p class="price">RM 55.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Set Family">−</button>
+<span class="qty-val" data-name="Set Family">0</span>
+<button class="btn-plus" data-name="Set Family">+</button>
+</div>
+<button class="btn-add-cart" data-name="Set Family">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Ikan Bakar / 3 Rasa / Stim</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Siakap (S)</h4>
+<p class="price">RM 15.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Siakap (S)">−</button>
+<span class="qty-val" data-name="Siakap (S)">0</span>
+<button class="btn-plus" data-name="Siakap (S)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Siakap (S)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Siakap (M)</h4>
+<p class="price">RM 25.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Siakap (M)">−</button>
+<span class="qty-val" data-name="Siakap (M)">0</span>
+<button class="btn-plus" data-name="Siakap (M)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Siakap (M)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Siakap (L)</h4>
+<p class="price">RM 35.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Siakap (L)">−</button>
+<span class="qty-val" data-name="Siakap (L)">0</span>
+<button class="btn-plus" data-name="Siakap (L)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Siakap (L)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Bawal / Jenahak / Talapia</h4>
+<p class="note-text">Harga mengikut saiz semasa</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Bawal / Jenahak / Talapia">−</button>
+<span class="qty-val" data-name="Bawal / Jenahak / Talapia">0</span>
+<button class="btn-plus" data-name="Bawal / Jenahak / Talapia">+</button>
+</div>
+<button class="btn-add-cart" data-name="Bawal / Jenahak / Talapia">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Set Shell Out</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Shell Out (S) + 1 Nasi Putih</h4>
+<p class="price">RM 17.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Shell Out (S) + 1 Nasi Putih">−</button>
+<span class="qty-val" data-name="Shell Out (S) + 1 Nasi Putih">0</span>
+<button class="btn-plus" data-name="Shell Out (S) + 1 Nasi Putih">+</button>
+</div>
+<button class="btn-add-cart" data-name="Shell Out (S) + 1 Nasi Putih">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Shell Out (M) + 2 Nasi Putih</h4>
+<p class="price">RM 29.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Shell Out (M) + 2 Nasi Putih">−</button>
+<span class="qty-val" data-name="Shell Out (M) + 2 Nasi Putih">0</span>
+<button class="btn-plus" data-name="Shell Out (M) + 2 Nasi Putih">+</button>
+</div>
+<button class="btn-add-cart" data-name="Shell Out (M) + 2 Nasi Putih">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Shell Out (L) + 4 Nasi Putih</h4>
+<p class="price">RM 43.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Shell Out (L) + 4 Nasi Putih">−</button>
+<span class="qty-val" data-name="Shell Out (L) + 4 Nasi Putih">0</span>
+<button class="btn-plus" data-name="Shell Out (L) + 4 Nasi Putih">+</button>
+</div>
+<button class="btn-add-cart" data-name="Shell Out (L) + 4 Nasi Putih">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Sup</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Sup Sayur / Ayam (M)</h4>
+<p class="price">RM 6.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Sup Sayur / Ayam (M)">−</button>
+<span class="qty-val" data-name="Sup Sayur / Ayam (M)">0</span>
+<button class="btn-plus" data-name="Sup Sayur / Ayam (M)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Sup Sayur / Ayam (M)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Sup Sayur / Ayam (L)</h4>
+<p class="price">RM 8.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Sup Sayur / Ayam (L)">−</button>
+<span class="qty-val" data-name="Sup Sayur / Ayam (L)">0</span>
+<button class="btn-plus" data-name="Sup Sayur / Ayam (L)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Sup Sayur / Ayam (L)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Sup Daging (L)</h4>
+<p class="price">RM 10.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Sup Daging (L)">−</button>
+<span class="qty-val" data-name="Sup Daging (L)">0</span>
+<button class="btn-plus" data-name="Sup Daging (L)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Sup Daging (L)">Tambah Ke Troli</button>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<h2>Menu Western Food</h2>
+<h3>Chicken Chop</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Chicken Chop</h4>
+<p class="price">RM 13.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Chop">−</button>
+<span class="qty-val" data-name="Chicken Chop">0</span>
+<button class="btn-plus" data-name="Chicken Chop">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Chop">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Chicken Chop Cheese</h4>
+<p class="price">RM 15.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Chop Cheese">−</button>
+<span class="qty-val" data-name="Chicken Chop Cheese">0</span>
+<button class="btn-plus" data-name="Chicken Chop Cheese">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Chop Cheese">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Chicken Chop Special</h4>
+<p class="price">RM 17.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Chop Special">−</button>
+<span class="qty-val" data-name="Chicken Chop Special">0</span>
+<button class="btn-plus" data-name="Chicken Chop Special">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Chop Special">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Chicken Chop Special Cheese</h4>
+<p class="price">RM 19.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Chop Special Cheese">−</button>
+<span class="qty-val" data-name="Chicken Chop Special Cheese">0</span>
+<button class="btn-plus" data-name="Chicken Chop Special Cheese">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Chop Special Cheese">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Chicken Grill</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Chicken Grill</h4>
+<p class="price">RM 14.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Grill">−</button>
+<span class="qty-val" data-name="Chicken Grill">0</span>
+<button class="btn-plus" data-name="Chicken Grill">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Grill">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Chicken Grill Cheese</h4>
+<p class="price">RM 16.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Grill Cheese">−</button>
+<span class="qty-val" data-name="Chicken Grill Cheese">0</span>
+<button class="btn-plus" data-name="Chicken Grill Cheese">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Grill Cheese">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Chicken Grill Special</h4>
+<p class="price">RM 18.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Grill Special">−</button>
+<span class="qty-val" data-name="Chicken Grill Special">0</span>
+<button class="btn-plus" data-name="Chicken Grill Special">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Grill Special">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Chicken Grill Special Cheese</h4>
+<p class="price">RM 20.90</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Chicken Grill Special Cheese">−</button>
+<span class="qty-val" data-name="Chicken Grill Special Cheese">0</span>
+<button class="btn-plus" data-name="Chicken Grill Special Cheese">+</button>
+</div>
+<button class="btn-add-cart" data-name="Chicken Grill Special Cheese">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Burger Chicken Chop</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Burger Chicken Chop</h4>
+<p class="price">RM 8.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Burger Chicken Chop">−</button>
+<span class="qty-val" data-name="Burger Chicken Chop">0</span>
+<button class="btn-plus" data-name="Burger Chicken Chop">+</button>
+</div>
+<button class="btn-add-cart" data-name="Burger Chicken Chop">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Burger Chicken Chop Special</h4>
+<p class="price">RM 10.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Burger Chicken Chop Special">−</button>
+<span class="qty-val" data-name="Burger Chicken Chop Special">0</span>
+<button class="btn-plus" data-name="Burger Chicken Chop Special">+</button>
+</div>
+<button class="btn-add-cart" data-name="Burger Chicken Chop Special">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Burger Chicken Grill</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Burger Chicken Grill</h4>
+<p class="price">RM 9.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Burger Chicken Grill">−</button>
+<span class="qty-val" data-name="Burger Chicken Grill">0</span>
+<button class="btn-plus" data-name="Burger Chicken Grill">+</button>
+</div>
+<button class="btn-add-cart" data-name="Burger Chicken Grill">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Burger Chicken Grill Special</h4>
+<p class="price">RM 11.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Burger Chicken Grill Special">−</button>
+<span class="qty-val" data-name="Burger Chicken Grill Special">0</span>
+<button class="btn-plus" data-name="Burger Chicken Grill Special">+</button>
+</div>
+<button class="btn-add-cart" data-name="Burger Chicken Grill Special">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Side Dish</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Fries</h4>
+<p class="price">RM 6.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Fries">−</button>
+<span class="qty-val" data-name="Fries">0</span>
+<button class="btn-plus" data-name="Fries">+</button>
+</div>
+<button class="btn-add-cart" data-name="Fries">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Fries Cheese</h4>
+<p class="price">RM 7.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Fries Cheese">−</button>
+<span class="qty-val" data-name="Fries Cheese">0</span>
+<button class="btn-plus" data-name="Fries Cheese">+</button>
+</div>
+<button class="btn-add-cart" data-name="Fries Cheese">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Nugget</h4>
+<p class="price">RM 6.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Nugget">−</button>
+<span class="qty-val" data-name="Nugget">0</span>
+<button class="btn-plus" data-name="Nugget">+</button>
+</div>
+<button class="btn-add-cart" data-name="Nugget">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Sosej</h4>
+<p class="price">RM 6.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Sosej">−</button>
+<span class="qty-val" data-name="Sosej">0</span>
+<button class="btn-plus" data-name="Sosej">+</button>
+</div>
+<button class="btn-add-cart" data-name="Sosej">Tambah Ke Troli</button>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<h2>Menu Minuman</h2>
+<h3>Minuman (Panas / Sejuk)</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Teh</h4>
+<p class="price">RM 1.50 / RM 2.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Teh">−</button>
+<span class="qty-val" data-name="Teh">0</span>
+<button class="btn-plus" data-name="Teh">+</button>
+</div>
+<button class="btn-add-cart" data-name="Teh">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Teh O</h4>
+<p class="price">RM 1.00 / RM 1.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Teh O">−</button>
+<span class="qty-val" data-name="Teh O">0</span>
+<button class="btn-plus" data-name="Teh O">+</button>
+</div>
+<button class="btn-add-cart" data-name="Teh O">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Kopi</h4>
+<p class="price">RM 1.50 / RM 2.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Kopi">−</button>
+<span class="qty-val" data-name="Kopi">0</span>
+<button class="btn-plus" data-name="Kopi">+</button>
+</div>
+<button class="btn-add-cart" data-name="Kopi">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Kopi O</h4>
+<p class="price">RM 1.00 / RM 1.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Kopi O">−</button>
+<span class="qty-val" data-name="Kopi O">0</span>
+<button class="btn-plus" data-name="Kopi O">+</button>
+</div>
+<button class="btn-add-cart" data-name="Kopi O">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Milo</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Milo">−</button>
+<span class="qty-val" data-name="Milo">0</span>
+<button class="btn-plus" data-name="Milo">+</button>
+</div>
+<button class="btn-add-cart" data-name="Milo">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Milo O</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Milo O">−</button>
+<span class="qty-val" data-name="Milo O">0</span>
+<button class="btn-plus" data-name="Milo O">+</button>
+</div>
+<button class="btn-add-cart" data-name="Milo O">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Nescafe</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Nescafe">−</button>
+<span class="qty-val" data-name="Nescafe">0</span>
+<button class="btn-plus" data-name="Nescafe">+</button>
+</div>
+<button class="btn-add-cart" data-name="Nescafe">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Nescafe O</h4>
+<p class="price">RM 2.00 / RM 2.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Nescafe O">−</button>
+<span class="qty-val" data-name="Nescafe O">0</span>
+<button class="btn-plus" data-name="Nescafe O">+</button>
+</div>
+<button class="btn-add-cart" data-name="Nescafe O">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Horlick</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Horlick">−</button>
+<span class="qty-val" data-name="Horlick">0</span>
+<button class="btn-plus" data-name="Horlick">+</button>
+</div>
+<button class="btn-add-cart" data-name="Horlick">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Horlick O</h4>
+<p class="price">RM 2.00 / RM 2.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Horlick O">−</button>
+<span class="qty-val" data-name="Horlick O">0</span>
+<button class="btn-plus" data-name="Horlick O">+</button>
+</div>
+<button class="btn-add-cart" data-name="Horlick O">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Oren Sunquit</h4>
+<p class="price">RM 1.50 / RM 2.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Oren Sunquit">−</button>
+<span class="qty-val" data-name="Oren Sunquit">0</span>
+<button class="btn-plus" data-name="Oren Sunquit">+</button>
+</div>
+<button class="btn-add-cart" data-name="Oren Sunquit">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Sirap</h4>
+<p class="price">RM 1.00 / RM 1.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Sirap">−</button>
+<span class="qty-val" data-name="Sirap">0</span>
+<button class="btn-plus" data-name="Sirap">+</button>
+</div>
+<button class="btn-add-cart" data-name="Sirap">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Limau</h4>
+<p class="price">RM 1.50 / RM 2.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Limau">−</button>
+<span class="qty-val" data-name="Limau">0</span>
+<button class="btn-plus" data-name="Limau">+</button>
+</div>
+<button class="btn-add-cart" data-name="Limau">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Lemon</h4>
+<p class="price">RM 2.00 / RM 2.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Lemon">−</button>
+<span class="qty-val" data-name="Lemon">0</span>
+<button class="btn-plus" data-name="Lemon">+</button>
+</div>
+<button class="btn-add-cart" data-name="Lemon">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Lemon Madu</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Lemon Madu">−</button>
+<span class="qty-val" data-name="Lemon Madu">0</span>
+<button class="btn-plus" data-name="Lemon Madu">+</button>
+</div>
+<button class="btn-add-cart" data-name="Lemon Madu">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Blue Lemon</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Blue Lemon">−</button>
+<span class="qty-val" data-name="Blue Lemon">0</span>
+<button class="btn-plus" data-name="Blue Lemon">+</button>
+</div>
+<button class="btn-add-cart" data-name="Blue Lemon">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Air Paket (Panas / Sejuk)</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Greentea</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Greentea">−</button>
+<span class="qty-val" data-name="Greentea">0</span>
+<button class="btn-plus" data-name="Greentea">+</button>
+</div>
+<button class="btn-add-cart" data-name="Greentea">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Radix</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Radix">−</button>
+<span class="qty-val" data-name="Radix">0</span>
+<button class="btn-plus" data-name="Radix">+</button>
+</div>
+<button class="btn-add-cart" data-name="Radix">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Larat</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Larat">−</button>
+<span class="qty-val" data-name="Larat">0</span>
+<button class="btn-plus" data-name="Larat">+</button>
+</div>
+<button class="btn-add-cart" data-name="Larat">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Apcel</h4>
+<p class="price">RM 2.50 / RM 3.00</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Apcel">−</button>
+<span class="qty-val" data-name="Apcel">0</span>
+<button class="btn-plus" data-name="Apcel">+</button>
+</div>
+<button class="btn-add-cart" data-name="Apcel">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Air Sparkling (Panas / Sejuk)</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Epal</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Epal (Sparkling)">−</button>
+<span class="qty-val" data-name="Epal (Sparkling)">0</span>
+<button class="btn-plus" data-name="Epal (Sparkling)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Epal (Sparkling)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Kiwi</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Kiwi (Sparkling)">−</button>
+<span class="qty-val" data-name="Kiwi (Sparkling)">0</span>
+<button class="btn-plus" data-name="Kiwi (Sparkling)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Kiwi (Sparkling)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Strawbery</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Strawbery (Sparkling)">−</button>
+<span class="qty-val" data-name="Strawbery (Sparkling)">0</span>
+<button class="btn-plus" data-name="Strawbery (Sparkling)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Strawbery (Sparkling)">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Tembikai</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Tembikai (Sparkling)">−</button>
+<span class="qty-val" data-name="Tembikai (Sparkling)">0</span>
+<button class="btn-plus" data-name="Tembikai (Sparkling)">+</button>
+</div>
+<button class="btn-add-cart" data-name="Tembikai (Sparkling)">Tambah Ke Troli</button>
+</div>
+</div>
+
+<h3>Jus Buah (Panas / Sejuk)</h3>
+<div class="menu-grid">
+<div class="menu-card">
+<h4>Epal</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Jus Epal">−</button>
+<span class="qty-val" data-name="Jus Epal">0</span>
+<button class="btn-plus" data-name="Jus Epal">+</button>
+</div>
+<button class="btn-add-cart" data-name="Jus Epal">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Oren</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Jus Oren">−</button>
+<span class="qty-val" data-name="Jus Oren">0</span>
+<button class="btn-plus" data-name="Jus Oren">+</button>
+</div>
+<button class="btn-add-cart" data-name="Jus Oren">Tambah Ke Troli</button>
+</div>
+<div class="menu-card">
+<h4>Tembikai</h4>
+<p class="price">RM 3.00 / RM 3.50</p>
+<div class="qty-wrap">
+<button class="btn-min" data-name="Jus Tembikai">−</button>
+<span class="qty-val" data-name="Jus Tembikai">0</span>
+<button class="btn-plus" data-name="Jus Tembikai">+</button>
+</div>
+<button class="btn-add-cart" data-name="Jus Tembikai">Tambah Ke Troli</button>
+</div>
+</div>
+<p class="note-text" style="margin-top:10px;">*Nota: Harga minuman: Panas = harga pertama, Sejuk = harga kedua</p>
+</div>
+</section>
+
+<div class="modal-overlay" id="modalCart">
+<div class="modal-box">
+<h3>Troli Pesanan</h3>
+<div id="cartListWrap"></div>
+<form id="borangTempahan">
+<div class="form-group">
+<label>Nama Penempah</label>
+<input type="text" id="inputNama" required>
+</div>
+<div class="form-group">
+<label>No. Telefon WhatsApp</label>
+<input type="tel" id="inputTelefon" required>
+</div>
+<div class="form-group">
+<label>Pilih Penjual (Nombor WhatsApp)</label>
+<select id="pilihPenjual" required>
+<option value="601155365129">Hafiz (+6011‑553‑65129)</option>
+<option value="60134633399">Ain (+6013‑463‑3399)</option>
+</select>
+</div>
+<div class="form-group">
+<label>Catatan Tambahan</label>
+<textarea id="inputCatatan" rows="3"></textarea>
+</div>
+<div class="modal-btn-row">
+<button type="button" class="btn-cancel" id="btnCartClose">Tutup</button>
+<button type="submit" class="btn-submit-order">Hantar ke WhatsApp</button>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+let qtyStore = {};
+let cartItems = [];
+
+function refreshQtyDisplay(itemName) {
+  const els = document.querySelectorAll(`.qty-val[data-name="${itemName}"]`);
+  els.forEach(el => el.textContent = qtyStore[itemName] || 0);
+}
+
+function addQty(itemName) {
+  if (!qtyStore[itemName]) qtyStore[itemName] = 0;
+  qtyStore[itemName] += 1;
+  refreshQtyDisplay(itemName);
+}
+
+function minusQty(itemName) {
+  if (!qtyStore[itemName]) qtyStore[itemName] = 0;
+  if (qtyStore[itemName] > 0) qtyStore[itemName] -= 1;
+  refreshQtyDisplay(itemName);
+}
+
+function addToCart(itemName) {
+  const qty = qtyStore[itemName] || 0;
+  if (qty <= 0) {
+    alert("Sila tekan butang (+) dahulu untuk pilih kuantiti!");
+    return;
+  }
+  const idx = cartItems.findIndex(x => x.name === itemName);
+  if (idx >= 0) {
+    cartItems[idx].qty = qty;
+  } else {
+    cartItems.push({ name: itemName, qty: qty });
+  }
+  alert(`${itemName} × ${qty} telah ditambah ke troli`);
+  qtyStore[itemName] = 0;
+  refreshQtyDisplay(itemName);
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const cartTotalItemEl = document.getElementById("cartTotalItem");
+  const cartListWrap = document.getElementById("cartListWrap");
+
+  let totalQty = cartItems.reduce((sum, it) => sum + it.qty, 0);
+  cartTotalItemEl.textContent = totalQty;
+  cartListWrap.innerHTML = "";
+
+  if (cartItems.length === 0) {
+    cartListWrap.innerHTML = "<p>Troli kosong.</p>";
+    return;
+  }
+
+  cartItems.forEach((item, i) => {
+    const row = document.createElement("div");
+    row.className = "cart-item-row";
+    row.innerHTML = `<span>${item.name} × ${item.qty}</span>
+                     <button class="btn-remove-item" data-idx="${i}">Buang</button>`;
+    cartListWrap.appendChild(row);
+  });
+
+  document.querySelectorAll(".btn-remove-item").forEach(btn => {
+    btn.onclick = () => {
+      const i = parseInt(btn.dataset.idx);
+      const removedName = cartItems[i].name;
+      cartItems.splice(i, 1);
+      qtyStore[removedName] = 0;
+      refreshQtyDisplay(removedName);
+      updateCartUI();
+    };
+  });
+}
+
+function sendOrderToWhatsApp(nama, telefon, waNumber, catatan) {
+  let senarai = "";
+  cartItems.forEach((it, i) => {
+    senarai += `${i+1}. ${it.name} × ${it.qty}\n`;
+  });
+  let mesej = `*Tempahan Pelantaq Ikan Bakaq*\n` +
+              `Nama: ${nama}\n` +
+              `No Telefon: ${telefon}\n` +
+              `Pesanan:\n${senarai}` +
+              `Catatan: ${catatan || "Tiada catatan"}`;
+
+  const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(mesej)}`;
+  window.open(url, "_blank");
+
+  cartItems = [];
+  Object.keys(qtyStore).forEach(k => { qtyStore[k] = 0; refreshQtyDisplay(k); });
+  updateCartUI();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".btn-plus").forEach(btn => {
+    btn.onclick = () => addQty(btn.dataset.name);
+  });
+  document.querySelectorAll(".btn-min").forEach(btn => {
+    btn.onclick = () => minusQty(btn.dataset.name);
+  });
+  document.querySelectorAll(".btn-add-cart").forEach(btn => {
+    btn.onclick = () => addToCart(btn.dataset.name);
+  });
+
+  document.getElementById("btnCartOpen").onclick = () => {
+    updateCartUI();
+    document.getElementById("modalCart").classList.add("active");
+  };
+  document.getElementById("btnCartClose").onclick = () => {
+    document.getElementById("modalCart").classList.remove("active");
+  };
+
+  document.getElementById("borangTempahan").onsubmit = function(e) {
+    e.preventDefault();
+    if (cartItems.length === 0) {
+      alert("Sila tambah sekurang‑kurangnya satu menu!");
+      return;
+    }
+    const nama = document.getElementById("inputNama").value.trim();
+    const telefon = document.getElementById("inputTelefon").value.trim();
+    const wa = document.getElementById("pilihPenjual").value;
+    const cat = document.getElementById("inputCatatan").value.trim();
+    sendOrderToWhatsApp(nama, telefon, wa, cat);
+    document.getElementById("modalCart").classList.remove("active");
+    this.reset();
+  };
+});
+</script>
+</body>
+</html>
